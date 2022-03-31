@@ -2,7 +2,7 @@ apiVersion: vmoperator.vmware.com/v1alpha1
 kind: VirtualMachine
 metadata:
   name: ubuntu-basic
-  namespace: ninja-wk2
+  namespace: lab-namespace
   labels:
     app: ubuntu-basic
 spec:
@@ -10,6 +10,9 @@ spec:
   className: best-effort-xsmall
   powerState: poweredOn
   storageClass: k8s-storage-policy
+  networkInterfaces:
+  - networkType: vsphere-distributed
+    networkName: "k8s-workload"
   vmMetadata:
     configMapName: ubuntu-basic
     transport: OvfEnv
