@@ -1,0 +1,27 @@
+apiVersion: vmoperator.vmware.com/v1alpha1
+kind: VirtualMachine
+metadata:
+  name: ubuntu-basic
+  namespace: lab-namespace
+  labels:
+    app: ubuntu-basic
+spec:
+  imageName: ubuntu-20.04-vmservice
+  className: best-effort-xsmall
+  powerState: poweredOn
+  storageClass: k8s-storage-policy
+  networkInterfaces:
+  - networkType: vsphere-distributed
+    networkName: "k8s-workload"
+  vmMetadata:
+    configMapName: ubuntu-basic
+    transport: OvfEnv
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: ubuntu-basic
+    namespace: lab-namespace
+data:
+  hostname: ubuntu-basic
+  password: VMware1!
