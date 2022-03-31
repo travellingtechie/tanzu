@@ -2,7 +2,7 @@ apiVersion: run.tanzu.vmware.com/v1alpha2
 kind: TanzuKubernetesCluster
 metadata:
   name: tkgs-cluster
-  namespace: lab-namespace
+  namespace: ninja-wk2
 spec:
   topology:
     controlPlane:
