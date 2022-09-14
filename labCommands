@@ -1,0 +1,40 @@
+Task 3
+kubectl vsphere login --server 172.18.10.2 -u ldev@corp.local   --insecure-skip-tls-verify
+kubectl config use-context ninja-wk2
+
+kubectl get vmclassbinding
+kubectl describe namespace ninja-wk2
+kubectl get tkr
+
+kubectl apply -f ~/tanzu/tanzucluster/tkg.yaml
+kubectl describe tkc tkgs-cluster
+
+Task 4
+kubectl vsphere login --server 172.18.10.2 -u  administrator@vsphere.local --tanzu-kubernetes-cluster-name tkgs-cluster  --tanzu-kubernetes-cluster-namespace ninja-wk2  --insecure-skip-tls-verify
+kubectl config use-context tkgs-cluster
+kubectl get pods -A
+
+kubectl apply -f ~/tanzu/tanzucluster/authorize-psp.yaml
+
+Task 5
+kubectl apply -f ~/tanzu/nginx/pvc.yaml
+kubectl get pv,pvc
+
+kubectl apply -f ~/tanzu/nginx/pod.yaml
+
+kubectl get pods
+
+kubectl apply -f ~/tanzu/nginx/svc.yaml
+kubectl get service
+
+kubectl exec -it nginx-pod -- bash
+
+cd /usr/share/nginx/html
+cat <<EOF > index.html
+<html>
+<body>
+<h1>It's Alive!</h1>
+</body>
+</html>
+EOF
+nginx-pod# exit
