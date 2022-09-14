@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: jumpbox
-  namespace: lab-namespace    
+  namespace: tkgs-cluster
 spec:
   containers:
   - image: "photon:3.0"
