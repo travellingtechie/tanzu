@@ -76,120 +76,25 @@ resource "nsxt_policy_segment" "tf-web" {
 #
 #
 #
-## Create a port on the T0 router. We will connect the T1 router to this port
-#resource "nsxt_logical_router_link_port_on_tier0" "link_port_tier0" {
-#  description       = "TIER0_PORT1 provisioned by Terraform"
-#  display_name      = "TIER0_PORT1"
-#  logical_router_id = "${data.nsxt_logical_tier0_router.tier0_router.id}"
-#    tag {
-#	scope = "${var.nsx_tag_scope}"
-#	tag = "${var.nsx_tag}"
-#    }
-#}
 #
-## Create a T1 uplink port and connect it to T0 router
-#resource "nsxt_logical_router_link_port_on_tier1" "link_port_tier1" {
-#  description                   = "TIER1_PORT1 provisioned by Terraform"
-#  display_name                  = "TIER1_PORT1"
-#  logical_router_id             = "${nsxt_logical_tier1_router.tier1_router.id}"
-#  linked_logical_router_port_id = "${nsxt_logical_router_link_port_on_tier0.link_port_tier0.id}"
-#    tag {
-#	scope = "${var.nsx_tag_scope}"
-#	tag = "${var.nsx_tag}"
-#    }
-#}
-#
-## Create a switchport on App logical switch
-#resource "nsxt_logical_port" "logical_port1" {
-#  admin_state       = "UP"
-#  description       = "LP1 provisioned by Terraform"
-#  display_name      = "AppToT1"
-#  logical_switch_id = "${nsxt_logical_switch.app.id}"
-#    tag {
-#	scope = "${var.nsx_tag_scope}"
-#	tag = "${var.nsx_tag}"
-#    }
-#}
-#
-## Create downlink port on the T1 router and connect it to the switchport we created earlier for App Tier
-#resource "nsxt_logical_router_downlink_port" "downlink_port" {
-#  description                   = "DP1 provisioned by Terraform"
-#  display_name                  = "DP1"
-#  logical_router_id             = "${nsxt_logical_tier1_router.tier1_router.id}"
-#  linked_logical_switch_port_id = "${nsxt_logical_port.logical_port1.id}"
-#  ip_address                    = "${var.app["gw"]}/${var.app["mask"]}"
-#    tag {
-#	scope = "${var.nsx_tag_scope}"
-#	tag = "${var.nsx_tag}"
-#    }
-#}
-#
-## Create a switchport on Web logical switch
-#resource "nsxt_logical_port" "logical_port2" {
-#  admin_state       = "UP"
-#  description       = "LP1 provisioned by Terraform"
-#  display_name      = "WebToT1"
-#  logical_switch_id = "${nsxt_logical_switch.web.id}"
-#    tag {
-#	scope = "${var.nsx_tag_scope}"
-#	tag = "${var.nsx_tag}"
-#    }
-#}
-#
-## Create downlink port on the T1 router and connect it to the switchport we created earlier
-#resource "nsxt_logical_router_downlink_port" "downlink_port2" {
-#  description                   = "DP2 provisioned by Terraform"
-#  display_name                  = "DP2"
-#  logical_router_id             = "${nsxt_logical_tier1_router.tier1_router.id}"
-#  linked_logical_switch_port_id = "${nsxt_logical_port.logical_port2.id}"
-#  ip_address                    = "${var.web["gw"]}/${var.web["mask"]}"
-#    tag {
-#	scope = "${var.nsx_tag_scope}"
-#	tag = "${var.nsx_tag}"
-#    }
-#}
-#
-## Create a switchport on DB logical switch
-#resource "nsxt_logical_port" "logical_port3" {
-#  admin_state       = "UP"
-#  description       = "LP3 provisioned by Terraform"
-#  display_name      = "DBToT1"
-#  logical_switch_id = "${nsxt_logical_switch.db.id}"
-#    tag {
-#	scope = "${var.nsx_tag_scope}"
-#	tag = "${var.nsx_tag}"
-#    }
-#}
-#
-## Create downlink port on the T1 router and connect it to the switchport we created earlier
-#resource "nsxt_logical_router_downlink_port" "downlink_port3" {
-#  description                   = "DP3 provisioned by Terraform"
-#  display_name                  = "DP3"
-#  logical_router_id             = "${nsxt_logical_tier1_router.tier1_router.id}"
-#  linked_logical_switch_port_id = "${nsxt_logical_port.logical_port3.id}"
-#  ip_address                    = "${var.db["gw"]}/${var.db["mask"]}"
-#    tag {
-#	scope = "${var.nsx_tag_scope}"
-#	tag = "${var.nsx_tag}"
-#    }
-#}
-#
-#
-## Create NSGROUP with dynamic membership criteria
-## all Virtual Machines with the specific tag and scope
-#resource "nsxt_ns_group" "nsgroup" {
-#  description  = "NSGroup provisioned by Terraform"
-#  display_name = "terraform-demo-sg"
-#  membership_criteria {
-#    target_type = "VirtualMachine"
-#    scope       = "${var.nsx_tag_scope}"
-#    tag         = "${var.nsx_tag}"
-#  }
-#    tag {
-#	scope = "${var.nsx_tag_scope}"
-#	tag = "${var.nsx_tag}"
-#    }
-#}
+# Create NSGROUP with dynamic membership criteria
+# all Virtual Machines with the specific tag and scope
+resource "nsxt_policy_group" "tf-all" {
+  description  = "NSGroup provisioned by Terraform"
+  display_name = "tf-all"
+  criteria {
+      condition {
+        member_type = "VirtualMachine"
+        key = Tag
+        value = "${var.nsx_tag_scope}|${var.nsx_tag}"
+      }
+  }
+    tag {
+	scope = "${var.nsx_tag_scope}"
+	tag = "${var.nsx_tag}"
+    }
+}
+
 #
 ## Create Web NSGROUP
 #resource "nsxt_ns_group" "webnsgroup" {
@@ -205,6 +110,7 @@ resource "nsxt_policy_segment" "tf-web" {
 #	tag = "${var.nsx_tag}"
 #    }
 #}
+
 ## Create App NSGROUP
 #resource "nsxt_ns_group" "appnsgroup" {
 #  description  = "NSGroup provisioned by Terraform"
