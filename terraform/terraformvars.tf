@@ -23,8 +23,8 @@ variable "nsx_tag" {
     type = string
     description = "Tag, the value for the scope above"
 }
-variable "ipset" {
-    type = list
+variable "ip_set" {
+    type = string
     description = "List of ip addresses that will be add in the IP-SET to allow communication to all VMs"
 }
 
