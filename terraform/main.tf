@@ -107,16 +107,16 @@ resource "nsxt_policy_security_policy" "tf_policy" {
     description  = "Ingress HTTPS rule"
     logged       = false
     destination_groups = [nsxt_policy_group.tf-all.path]
-    services = [data.nsxt_policy_service.https]
+    services = [data.nsxt_policy_service.https.path]
     action       = "ALLOW"
   }
   rule {
     display_name = "Allow SSH"
     description  = "Ingress SSH rule"
     logged       = false
-    source_groups = [nsxt_policy_group.tf-ip-set]
+    source_groups = [nsxt_policy_group.tf-ip-set.path]
     destination_groups = [nsxt_policy_group.tf-all.path]
-    services = [data.nsxt_policy_service.ssh]
+    services = [data.nsxt_policy_service.ssh.path]
     action       = "ALLOW"
   }
   rule {
