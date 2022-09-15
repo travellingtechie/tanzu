@@ -8,6 +8,7 @@ nsx_data_vars = {
     t0_router_name = "T0-GW"
     edge_cluster = "EdgeCluster"
     t1_router_name = "tf-T1GW"
+    dhcp_server = "Default"
 }
 nsx_rs_vars = {
     t1_router_name = "tf-T1GW"

@@ -19,7 +19,27 @@ resource "nsxt_policy_segment" "tf-web" {
     display_name = "tf-web-tier"
     connectivity_path   = nsxt_policy_tier1_gateway.tier1_gw.path
     transport_zone_path = "${data.nsxt_policy_transport_zone.overlay_tz.path}"
-    replication_mode = "MTEP"
+
+
+  subnet {
+    cidr        = "10.100.2.1/24"
+    dhcp_ranges = ["10.100.2.100-10.100.2.160"]
+
+    dhcp_v4_config {
+      server_address = "12.12.2.2/24"
+      lease_time     = 36000
+
+      dhcp_option_121 {
+        network  = "6.6.6.0/24"
+        next_hop = "1.1.1.21"
+      }
+
+      dhcp_generic_option {
+        code   = "119"
+        values = ["abc"]
+      }
+    }
+
     tag {
 	scope = "${var.nsx_tag_scope}"
 	tag = "${var.nsx_tag}"
@@ -831,7 +851,7 @@ resource "nsxt_policy_segment" "tf-web" {
 #
 #}
 #
-## Tag the newly created VM, so it will becaome a member of my NSGroup
+## Tag the newly created VM, so it will become a member of my NSGroup
 ## that way all fw rules we have defined earlier will be applied to it
 #resource "nsxt_vm_tags" "vm3_tags" {
 #    instance_id = "${vsphere_virtual_machine.dbvm.id}"
