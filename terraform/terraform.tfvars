@@ -14,7 +14,7 @@ nsx_rs_vars = {
     t1_router_name = "tf-T1GW"
 }
 
-ip_set = "192.168.110.10"
+ip_set = "192.168.110.10,172.16.10.11"
 
 
 nsx_tag_scope = "project"
@@ -23,10 +23,10 @@ nsx_tag = "terraform-demo"
 vsphere = {
     vsphere_user = "administrator@vsphere.local"
     vsphere_password = "VMware1!"
-    vsphere_ip = "10.29.15.169"
-    dc = "MyDC1"
+    vsphere_ip = "192.168.110.22"
+    dc = "DC-SiteA"
     datastore = "NFS"
-    resource_pool = "T_Cluster/Resources"
+    resource_pool = "Compute-Cluster/Resources"
     vm_template = "t_template_novra"
 }
 

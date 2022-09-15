@@ -176,296 +176,64 @@ resource "nsxt_policy_group" "tf-ip-set" {
 }
 
 #
-## Create a Firewall Section
+## Create a Firewall Policy
+
 ## All rules of this section will be applied to the VMs that are members of the NSGroup we created earlier
-#resource "nsxt_firewall_section" "firewall_section" {
-#  description  = "FS provisioned by Terraform"
-#  display_name = "Terraform Demo FW Section"
-#    tag {
-#	scope = "${var.nsx_tag_scope}"
-#	tag = "${var.nsx_tag}"
-#    }
-#  applied_to {
-#    target_type = "NSGroup"
-#    target_id   = "${nsxt_ns_group.nsgroup.id}"
-#  }
-#
-#  section_type = "LAYER3"
-#  stateful     = true
-#
-#
-## Allow communication to my VMs only on the ports we defined earlier as NSService
-#  rule {
-#    display_name = "Allow HTTPs"
-#    description  = "In going rule"
-#    action       = "ALLOW"
-#    logged       = false
-#    ip_protocol  = "IPV4"
-#    destination {
-#      target_type = "NSGroup"
-#      target_id   = "${nsxt_ns_group.webnsgroup.id}"
-#    }
-#    service {
-#      target_type = "NSService"
-#      target_id   = "${data.nsxt_ns_service.https.id}"
-#    }
-#  }
-#  rule {
-#    display_name = "Allow SSH"
-#    description  = "In going rule"
-#    action       = "ALLOW"
-#    logged       = false
-#    ip_protocol  = "IPV4"
-#    destination {
-#      target_type = "NSGroup"
-#      target_id   = "${nsxt_ns_group.nsgroup.id}"
-##      target_id   = "${nsxt_ns_group.webnsgroup.id}"
-#    }
-#    service {
-#      target_type = "NSService"
-#      target_id   = "${data.nsxt_ns_service.ssh.id}"
-#    }
-#  }
-#  rule {
-#    display_name = "Allow Web to App"
-#    description  = "In going rule"
-#    action       = "ALLOW"
-#    logged       = false
-#    ip_protocol  = "IPV4"
-#    source {
-#      target_type = "NSGroup"
-#      target_id   = "${nsxt_ns_group.webnsgroup.id}"
-#    }
-#    destination {
-#      target_type = "NSGroup"
-#      target_id   = "${nsxt_ns_group.appnsgroup.id}"
-#    }
-#    service {
-#      target_type = "NSService"
-#      target_id   = "${nsxt_l4_port_set_ns_service.app.id}"
-#    }
-#  }
-#  rule {
-#    display_name = "Allow App to DB"
-#    description  = "In going rule"
-#    action       = "ALLOW"
-#    logged       = false
-#    ip_protocol  = "IPV4"
-#    source {
-#      target_type = "NSGroup"
-#      target_id   = "${nsxt_ns_group.appnsgroup.id}"
-#    }
-#    destination {
-#      target_type = "NSGroup"
-#      target_id   = "${nsxt_ns_group.dbnsgroup.id}"
-#    }
-#    service {
-#      target_type = "NSService"
-#      target_id   = "${data.nsxt_ns_service.mysql.id}"
-#    }
-#  }
-#
-## Allow the ip addresses defined in the IP-SET to communicate to my VMs on all ports
-#  rule {
-#    display_name = "Allow Infrastructure"
-#    description  = "Allow DNS and Management Servers"
-#    action       = "ALLOW"
-#    logged       = false
-#    ip_protocol  = "IPV4"
-#    source {
-#      target_type = "IPSet"
-#      target_id   = "${nsxt_ip_set.ip_set.id}"
-#    }
-#    destination {
-#      target_type = "NSGroup"
-#      target_id   = "${nsxt_ns_group.nsgroup.id}"
-#    }
-#  }
-#
-## Allow all communication from my VMs to everywhere
-#  rule {
-#    display_name = "Allow out"
-#    description  = "Out going rule"
-#    action       = "ALLOW"
-#    logged       = false
-#    ip_protocol  = "IPV4"
-#
-#    source {
-#      target_type = "NSGroup"
-#      target_id   = "${nsxt_ns_group.nsgroup.id}"
-#    }
-#  }
-#
-## REJECT everything that is not explicitelly allowed above and log a message
-#  rule {
-#    display_name = "Deny ANY"
-#    description  = "Default Deny the traffic"
-#    action       = "REJECT"
-#    logged       = true
-#    ip_protocol  = "IPV4"
-#  }
-#}
-#
-## Create 1 to 1 NAT for Web VM
-#resource "nsxt_nat_rule" "rule1" {
-#  count = "${var.web["nat_ip"] != "" ? 1 : 0}"
-#  logical_router_id         = "${nsxt_logical_tier1_router.tier1_router.id}"
-#  description               = "1 to 1 NAT provisioned by Terraform"
-#  display_name              = "Web 1to1-in"
-#  action                    = "SNAT"
-#  enabled                   = true
-#  logging                   = false
-#  nat_pass                  = true
-#  translated_network        =  "${var.web["nat_ip"]}"
-#  match_source_network = "${var.web["ip"]}/32"
-#    tag {
-#	scope = "${var.nsx_tag_scope}"
-#	tag = "${var.nsx_tag}"
-#    }
-#}
-#
-#resource "nsxt_nat_rule" "rule2" {
-#  count = "${var.web["nat_ip"] != "" ? 1 : 0}"
-#  logical_router_id         = "${nsxt_logical_tier1_router.tier1_router.id}"
-#  description               = "1 to 1 NAT provisioned by Terraform"
-#  display_name              = "Web 1to1-out"
-#  action                    = "DNAT"
-#  enabled                   = true
-#  logging                   = false
-#  nat_pass                  = true
-#  translated_network        = "${var.web["ip"]}"
-#  match_destination_network = "${var.web["nat_ip"]}/32"
-#    tag {
-#	scope = "${var.nsx_tag_scope}"
-#	tag = "${var.nsx_tag}"
-#    }
-#}
-#
-#
-## Create 1 to 1 NAT for App VM
-#resource "nsxt_nat_rule" "rule3" {
-#  count = "${var.app["nat_ip"] != "" ? 1 : 0}"
-#  logical_router_id         = "${nsxt_logical_tier1_router.tier1_router.id}"
-#  description               = "1 to 1 NAT provisioned by Terraform"
-#  display_name              = "App 1to1-in"
-#  action                    = "SNAT"
-#  enabled                   = true
-#  logging                   = false
-#  nat_pass                  = true
-#  translated_network        =  "${var.app["nat_ip"]}"
-#  match_source_network = "${var.app["ip"]}/32"
-#    tag {
-#	scope = "${var.nsx_tag_scope}"
-#	tag = "${var.nsx_tag}"
-#    }
-#}
-#
-#resource "nsxt_nat_rule" "rule4" {
-#  count = "${var.app["nat_ip"] != "" ? 1 : 0}"
-#  logical_router_id         = "${nsxt_logical_tier1_router.tier1_router.id}"
-#  description               = "1 to 1 NAT provisioned by Terraform"
-#  display_name              = "App 1to1-out"
-#  action                    = "DNAT"
-#  enabled                   = true
-#  logging                   = false
-#  nat_pass                  = true
-#  translated_network        = "${var.app["ip"]}"
-#  match_destination_network = "${var.app["nat_ip"]}/32"
-#    tag {
-#	scope = "${var.nsx_tag_scope}"
-#	tag = "${var.nsx_tag}"
-#    }
-#}
-#
-## Create 1 to 1 NAT for DB VM
-#resource "nsxt_nat_rule" "rule5" {
-#  count = "${var.db["nat_ip"] != "" ? 1 : 0}"
-#  logical_router_id         = "${nsxt_logical_tier1_router.tier1_router.id}"
-#  description               = "1 to 1 NAT provisioned by Terraform"
-#  display_name              = "DB 1to1-in"
-#  action                    = "SNAT"
-#  enabled                   = true
-#  logging                   = false
-#  nat_pass                  = true
-#  translated_network        =  "${var.db["nat_ip"]}"
-#  match_source_network      = "${var.db["ip"]}/32"
-#    tag {
-#	scope = "${var.nsx_tag_scope}"
-#	tag = "${var.nsx_tag}"
-#    }
-#}
-#
-#resource "nsxt_nat_rule" "rule6" {
-#  count = "${var.db["nat_ip"] != "" ? 1 : 0}"
-#  logical_router_id         = "${nsxt_logical_tier1_router.tier1_router.id}"
-#  description               = "1 to 1 NAT provisioned by Terraform"
-#  display_name              = "DB 1to1-out"
-#  action                    = "DNAT"
-#  enabled                   = true
-#  logging                   = false
-#  nat_pass                  = true
-#  translated_network        = "${var.db["ip"]}"
-#  match_destination_network = "${var.db["nat_ip"]}/32"
-#    tag {
-#	scope = "${var.nsx_tag_scope}"
-#	tag = "${var.nsx_tag}"
-#    }
-#}
-#
-#
-#
-## Configure the VMware vSphere Provider
-#provider "vsphere" {
-#    user           = "${var.vsphere["vsphere_user"]}"
-#    password       = "${var.vsphere["vsphere_password"]}"
-#    vsphere_server = "${var.vsphere["vsphere_ip"]}"
-#    allow_unverified_ssl = true
-#}
-#
-## data source for my vSphere Data Center
-#data "vsphere_datacenter" "dc" {
-#  name = "${var.vsphere["dc"]}"
-#}
-#
-## Data source for the logical switch we created earlier
-## we need that as we cannot refer directly to the logical switch from the vm resource below
-#data "vsphere_network" "terraform_web" {
-#    name = "${nsxt_logical_switch.web.display_name}"
-#    datacenter_id = "${data.vsphere_datacenter.dc.id}"
-#    depends_on = ["nsxt_logical_switch.web"]
-#}
-#data "vsphere_network" "terraform_app" {
-#    name = "${nsxt_logical_switch.app.display_name}"
-#    datacenter_id = "${data.vsphere_datacenter.dc.id}"
-#    depends_on = ["nsxt_logical_switch.app"]
-#}
-#data "vsphere_network" "terraform_db" {
-#    name = "${nsxt_logical_switch.db.display_name}"
-#    datacenter_id = "${data.vsphere_datacenter.dc.id}"
-#    depends_on = ["nsxt_logical_switch.db"]
-#}
-#
-#
-#
-## Datastore data source
-#data "vsphere_datastore" "datastore" {
-#  name          = "${var.vsphere["datastore"]}"
-#  datacenter_id = "${data.vsphere_datacenter.dc.id}"
-#}
-#
-## data source for my cluster's default resource pool
-#data "vsphere_resource_pool" "pool" {
-#  name          = "${var.vsphere["resource_pool"]}"
-#  datacenter_id = "${data.vsphere_datacenter.dc.id}"
-#}
-#
-## Data source for the template I am going to use to clone my VM from
-#data "vsphere_virtual_machine" "template" {
-#    name = "${var.vsphere["vm_template"]}"
-#    datacenter_id = "${data.vsphere_datacenter.dc.id}"
-#}
-#
-## Clone a VM from the template above and attach it to the newly created logical switch
+resource "nsxt_policy_security_policy" "tf_policy" {
+  description  = "FS provisioned by Terraform"
+  display_name = "Terraform Demo FW Section"
+  category     = "Application"
+  scope        = [nsxt_policy_group.tf-all.path]
+  tag {
+    scope = "${var.nsx_tag_scope}"
+    tag   = "${var.nsx_tag}"
+  }
+  rule {
+    display_name = "Allow HTTPS"
+    description  = "Ingress HTTPS rule"
+    logged       = false
+    destination_groups = [nsxt_policy_group.tf-all.path]
+    services = [nsxt_policy_service.https]
+    action       = "ALLOW"
+  }
+  rule {
+    display_name = "Allow SSH"
+    description  = "Ingress SSH rule"
+    logged       = false
+    source_groups = [nsxt_policy_group.tf-ip-set]
+    destination_groups = [nsxt_policy_group.tf-all.path]
+    services = [nsxt_policy_service.ssh]
+    action       = "ALLOW"
+  }
+  rule {
+    display_name = "Allow Egress"
+    description  = "TF Egress Rule"
+    logged       = false
+    source_groups = [nsxt_policy_group.tf-all.path]
+    action       = "ALLOW"
+  }
+  rule {
+    display_name = "Reject Ingress"
+    description  = "TF Ingress Rule"
+    logged       = true
+    destination_groups = [nsxt_policy_group.tf-all.path]
+    action       = "REJECT"
+  }
+
+}
+resource "nsxt_policy_vm_tags" "web02a_tags" {
+  instance_id = nsxt_policy_vm.web-02a.id
+  tag {
+	scope = "${var.nsx_tag_scope}"
+	tag = "${var.nsx_tag}"
+    }
+    tag {
+	scope = "tier"
+	tag = "web"
+    }
+}
+
+## Clone a VM from the template and attach it to the newly created logical switch
 #resource "vsphere_virtual_machine" "appvm" {
 #    name             = "${var.app["vm_name"]}"
 #    depends_on = ["nsxt_logical_switch.app"]
