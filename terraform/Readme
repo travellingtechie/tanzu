@@ -1,4 +1,5 @@
-#!/bin/bash
+
+# Run the following commands to install terraform
 
 apt update
 apt install  software-properties-common gnupg2 curl
@@ -7,3 +8,7 @@ install -o root -g root -m 644 hashicorp.gpg /etc/apt/trusted.gpg.d/
 apt-add-repository "deb [arch=$(dpkg --print-architecture)] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
 apt update
 apt install terraform
+
+# Run the following commands to initialize and apply the plan
+terraform init
+terraform apply

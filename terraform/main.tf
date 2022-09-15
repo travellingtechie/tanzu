@@ -1,4 +1,5 @@
-# Configure the VMware NSX-T Provider
+# Derived from https://blogs.vmware.com/networkvirtualization/2018/04/nsx-t-automation-with-terraform.html
+
 
 # Create T1 router
 resource "nsxt_policy_tier1_gateway" "tier1_gw" {
@@ -14,7 +15,7 @@ resource "nsxt_policy_tier1_gateway" "tier1_gw" {
     }
 }
 
-# Create Web Tier NSX-T Logical Switch
+# Create Web Tier NSX Segment
 resource "nsxt_policy_segment" "tf-web" {
     description = "LS created by Terraform"
     display_name = "tf-web-tier"
@@ -38,6 +39,7 @@ resource "nsxt_policy_segment" "tf-web" {
     }
 }
 
+# Create a Security Group, using the tag specified in the terraform.tfvars file
 resource "nsxt_policy_group" "tf-all" {
   description  = "NSGroup provisioned by Terraform"
   display_name = "tf-all"
@@ -55,7 +57,7 @@ resource "nsxt_policy_group" "tf-all" {
     }
 }
 
-# Create custom Service for App service that listens on port 8443
+# Create custom Service for App that listens on port specified in terraform.tfvars
 resource "nsxt_policy_service" "app" {
   description       = "L4 Port range provisioned by Terraform"
   display_name      = "App Service"
@@ -72,8 +74,7 @@ resource "nsxt_policy_service" "app" {
 }
 
 
-# Create IP-SET with some ip addresses
-# we will use in for fw rules allowing communication to this external IPs
+# Create a security group with the IP of our Control Center VM
 resource "nsxt_policy_group" "tf-ip-set" {
   description  = "Policy Group provisioned by Terraform"
   display_name = "tf-ip-set"
@@ -90,9 +91,8 @@ resource "nsxt_policy_group" "tf-ip-set" {
 }
 
 #
-## Create a Firewall Policy
+## Create a Firewall Policy and Rules
 
-## All rules of this section will be applied to the VMs that are members of the NSGroup we created earlier
 resource "nsxt_policy_security_policy" "tf_policy" {
   description  = "FS provisioned by Terraform"
   display_name = "Terraform Demo FW Section"
@@ -146,6 +146,10 @@ resource "nsxt_policy_vm_tags" "web02a_tags" {
 	tag = "web"
     }
 }
+
+## Next step is to use the vSphere provider to clone a VM
+# Then apply a configuration via cloud init or saltstack
+
 
 ## Clone a VM from the template and attach it to the newly created logical switch
 #resource "vsphere_virtual_machine" "appvm" {

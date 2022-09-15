@@ -1,3 +1,4 @@
+# Variable data that is called in main.tf
 nsx = {
     ip  = "192.168.110.201"
     user = "admin"
