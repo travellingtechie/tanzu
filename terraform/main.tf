@@ -85,7 +85,7 @@ resource "nsxt_policy_group" "tf-all" {
   criteria {
       condition {
         member_type = "VirtualMachine"
-        key = Tag
+        key = "Tag"
         value = "${var.nsx_tag_scope}|${var.nsx_tag}"
       }
   }
