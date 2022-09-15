@@ -12,6 +12,6 @@ data "nsxt_policy_edge_cluster" "edge_cluster1" {
     display_name = "${var.nsx_data_vars["edge_cluster"]}"
 }
 
-data "nsxt_policy_dhcp_server" "dhcp_server" {
-  display_name = "${var.nsx_data_vars["dhcp_server"]}"
-}
+#data "nsxt_policy_dhcp_server" "dhcp_server" {
+#  display_name = "${var.nsx_data_vars["dhcp_server"]}"
+#}

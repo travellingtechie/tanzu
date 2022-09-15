@@ -23,8 +23,8 @@ resource "nsxt_policy_segment" "tf-web" {
 
   subnet {
     cidr        = "10.100.2.1/24"
-    dhcp_ranges = ["10.100.2.100-10.100.2.160"]
-    dhcp_config_path = nsxt_policy_dhcp_server.dhcp_server.path
+#    dhcp_ranges = ["10.100.2.100-10.100.2.160"]
+#    dhcp_config_path = nsxt_policy_dhcp_server.dhcp_server.path
     }
 
     tag {
