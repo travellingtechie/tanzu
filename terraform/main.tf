@@ -141,42 +141,36 @@ resource "nsxt_policy_group" "tf-all" {
 #    }
 #}
 #
-## Create custom NSService for App service that listens on port 8443
-#resource "nsxt_l4_port_set_ns_service" "app" {
-#  description       = "L4 Port range provisioned by Terraform"
-#  display_name      = "App Service"
-#  protocol          = "TCP"
-#  destination_ports = ["${var.app_listen_port}"]
-#    tag {
-#	scope = "${var.nsx_tag_scope}"
-#	tag = "${var.nsx_tag}"
-#    }
-#}
-#
-## Create data sourcees for some NSServices that we need to create FW rules
-#data "nsxt_ns_service" "https" {
-#  display_name = "HTTPS"
-#}
-#
-#data "nsxt_ns_service" "mysql" {
-#  display_name = "MySQL"
-#}
-#
-#data "nsxt_ns_service" "ssh" {
-#  display_name = "SSH"
-#}
-#
-## Create IP-SET with some ip addresses
-## we will use in for fw rules allowing communication to this external IPs
-#resource "nsxt_ip_set" "ip_set" {
-#  description  = "Infrastructure IPSET provisioned by Terraform"
-#  display_name = "Infra"
-#    tag {
-#	scope = "${var.nsx_tag_scope}"
-#	tag = "${var.nsx_tag}"
-#    }
-#  ip_addresses = "${var.ipset}"
-#}
+# Create custom NSService for App service that listens on port 8443
+resource "nsxt_policy_service" "app" {
+  description       = "L4 Port range provisioned by Terraform"
+  display_name      = "App Service"
+  protocol          = "TCP"
+  destination_ports = ["${var.app_listen_port}"]
+    tag {
+	scope = "${var.nsx_tag_scope}"
+	tag = "${var.nsx_tag}"
+    }
+}
+
+
+# Create IP-SET with some ip addresses
+# we will use in for fw rules allowing communication to this external IPs
+resource "nsxt_policy_group" "tf-ip-set" {
+  description  = "Policy Group provisioned by Terraform"
+  display_name = "tf-ip-set"
+  criteria {
+      ipaddress_expression {
+
+        ip_addresses = ["${var.ipset}"]
+      }
+  }
+    tag {
+	scope = "${var.nsx_tag_scope}"
+	tag = "${var.nsx_tag}"
+    }
+}
+
 #
 ## Create a Firewall Section
 ## All rules of this section will be applied to the VMs that are members of the NSGroup we created earlier
