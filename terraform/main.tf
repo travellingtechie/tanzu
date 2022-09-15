@@ -166,7 +166,7 @@ resource "nsxt_policy_group" "tf-ip-set" {
   criteria {
       ipaddress_expression {
 
-        ip_addresses = ["${var.ipset}"]
+        ip_addresses = ["${var.ip_set}"]
       }
   }
     tag {

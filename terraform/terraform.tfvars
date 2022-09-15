@@ -14,7 +14,7 @@ nsx_rs_vars = {
     t1_router_name = "tf-T1GW"
 }
 
-ipset = "192.168.110.10"
+ip_set = "192.168.110.10"
 
 
 nsx_tag_scope = "project"
