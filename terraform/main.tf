@@ -38,47 +38,6 @@ resource "nsxt_policy_segment" "tf-web" {
     }
 }
 
-# Create App Tier NSX-T Logical Switch
-#resource "nsxt_logical_switch" "terraform-app" {
-#    admin_state = "UP"
-#    description = "LS created by Terraform"
-#    display_name = "app-tier"
-#    transport_zone_id = "${data.nsxt_transport_zone.overlay_tz.id}"
-#    replication_mode = "MTEP"
-#    tag {
-#	scope = "${var.nsx_tag_scope}"
-#	tag = "${var.nsx_tag}"
-#    }
-#    tag {
-#	scope = "tier"
-#	tag = "app"
-#    }
-#}
-
-
-## Create DB Tier NSX-T Logical Switch
-#resource "nsxt_logical_switch" "terraform-db" {
-#    admin_state = "UP"
-#    description = "LS created by Terraform"
-#    display_name = "db-tier"
-#    transport_zone_id = "${data.nsxt_transport_zone.overlay_tz.id}"
-#    replication_mode = "MTEP"
-#    tag {
-#	scope = "${var.nsx_tag_scope}"
-#	tag = "${var.nsx_tag}"
-#    }
-#    tag {
-#	scope = "tier"
-#	tag = "db"
-#    }
-#}
-#
-#
-#
-#
-#
-# Create NSGROUP with dynamic membership criteria
-# all Virtual Machines with the specific tag and scope
 resource "nsxt_policy_group" "tf-all" {
   description  = "NSGroup provisioned by Terraform"
   display_name = "tf-all"
@@ -96,52 +55,7 @@ resource "nsxt_policy_group" "tf-all" {
     }
 }
 
-#
-## Create Web NSGROUP
-#resource "nsxt_ns_group" "webnsgroup" {
-#  description  = "NSGroup provisioned by Terraform"
-#  display_name = "web-terraform-demo-sg"
-#  membership_criteria {
-#    target_type = "VirtualMachine"
-#    scope       = "tier"
-#    tag         = "web"
-#  }
-#    tag {
-#	scope = "${var.nsx_tag_scope}"
-#	tag = "${var.nsx_tag}"
-#    }
-#}
-
-## Create App NSGROUP
-#resource "nsxt_ns_group" "appnsgroup" {
-#  description  = "NSGroup provisioned by Terraform"
-#  display_name = "app-terraform-demo-sg"
-#  membership_criteria {
-#    target_type = "VirtualMachine"
-#    scope       = "tier"
-#    tag         = "app"
-#  }
-#    tag {
-#	scope = "${var.nsx_tag_scope}"
-#	tag = "${var.nsx_tag}"
-#    }
-#}
-## Create DB NSGROUP
-#resource "nsxt_ns_group" "dbnsgroup" {
-#  description  = "NSGroup provisioned by Terraform"
-#  display_name = "db-terraform-demo-sg"
-#  membership_criteria {
-#    target_type = "VirtualMachine"
-#    scope       = "tier"
-#    tag         = "db"
-#  }
-#    tag {
-#	scope = "${var.nsx_tag_scope}"
-#	tag = "${var.nsx_tag}"
-#    }
-#}
-#
-# Create custom NSService for App service that listens on port 8443
+# Create custom Service for App service that listens on port 8443
 resource "nsxt_policy_service" "app" {
   description       = "L4 Port range provisioned by Terraform"
   display_name      = "App Service"
@@ -193,7 +107,7 @@ resource "nsxt_policy_security_policy" "tf_policy" {
     description  = "Ingress HTTPS rule"
     logged       = false
     destination_groups = [nsxt_policy_group.tf-all.path]
-    services = [nsxt_policy_service.https]
+    services = [data.nsxt_policy_service.https]
     action       = "ALLOW"
   }
   rule {
@@ -202,7 +116,7 @@ resource "nsxt_policy_security_policy" "tf_policy" {
     logged       = false
     source_groups = [nsxt_policy_group.tf-ip-set]
     destination_groups = [nsxt_policy_group.tf-all.path]
-    services = [nsxt_policy_service.ssh]
+    services = [data.nsxt_policy_service.ssh]
     action       = "ALLOW"
   }
   rule {

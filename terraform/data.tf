@@ -27,9 +27,9 @@ data "nsxt_policy_service" "ssh" {
 data "nsxt_policy_vm" "web-02a" {
   display_name = "web-02a"
 }
-data "vsphere_datacenter" "dc" {
-  name = "${var.vsphere["dc"]}"
-}
+#data "vsphere_datacenter" "dc" {
+#  name = "${var.vsphere["dc"]}"
+#}
 
 
 ## Data source for the logical switch we created earlier
