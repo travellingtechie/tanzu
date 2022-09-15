@@ -24,20 +24,7 @@ resource "nsxt_policy_segment" "tf-web" {
   subnet {
     cidr        = "10.100.2.1/24"
     dhcp_ranges = ["10.100.2.100-10.100.2.160"]
-
-    dhcp_v4_config {
-      server_address = "12.12.2.2/24"
-      lease_time     = 36000
-
-      dhcp_option_121 {
-        network  = "6.6.6.0/24"
-        next_hop = "1.1.1.21"
-      }
-
-      dhcp_generic_option {
-        code   = "119"
-        values = ["abc"]
-      }
+    dhcp_config_path = nsxt_policy_dhcp_server.dhcp_server.path
     }
 
     tag {
