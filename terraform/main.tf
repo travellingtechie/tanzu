@@ -6,6 +6,7 @@ resource "nsxt_policy_tier1_gateway" "tier1_gw" {
   display_name                = "${var.nsx_rs_vars["t1_router_name"]}"
   failover_mode               = "PREEMPTIVE"
   edge_cluster_path            = "${data.nsxt_policy_edge_cluster.edge_cluster1.path}"
+  tier0_path                  = data.nsxt_policy_tier0_gateway.tier0_router.path
   route_advertisement_types  = ["TIER1_STATIC_ROUTES","TIER1_CONNECTED","TIER1_NAT"]
     tag {
 	scope = "${var.nsx_tag_scope}"
