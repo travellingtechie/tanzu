@@ -4,7 +4,7 @@ nsx = {
     password = "VMware1!VMware1!"
 }
 nsx_data_vars = {
-    transport_zone  = "nsx_overlay_transportzone"
+    transport_zone  = "nsx-overlay-transportzone"
     t0_router_name = "T0-GW"
     edge_cluster = "EdgeCluster"
     t1_router_name = "tf-T1GW"
