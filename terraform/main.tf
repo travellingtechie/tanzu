@@ -86,6 +86,7 @@ resource "nsxt_policy_group" "tf-all" {
       condition {
         member_type = "VirtualMachine"
         key = "Tag"
+        operator = "EQUALS"
         value = "${var.nsx_tag_scope}|${var.nsx_tag}"
       }
   }
