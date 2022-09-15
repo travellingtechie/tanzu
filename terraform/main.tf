@@ -1,7 +1,7 @@
 # Configure the VMware NSX-T Provider
 
 # Create T1 router
-resource "nsxt_logical_tier1_router" "tier1_router" {
+resource "nsxt_policy_tier1_gateway" "tier1_gw" {
   description                 = "Tier1 router provisioned by Terraform"
   display_name                = "${var.nsx_rs_vars["t1_router_name"]}"
   failover_mode               = "PREEMPTIVE"
@@ -17,7 +17,7 @@ resource "nsxt_logical_tier1_router" "tier1_router" {
 resource "nsxt_logical_switch" "tf-web" {
     description = "LS created by Terraform"
     display_name = "tf-web-tier"
-    connectivity_path   = nsxt_policy_tier1_gateway.tier1_router.path
+    connectivity_path   = nsxt_policy_tier1_gateway.tier1_gw.path
     transport_zone_path = "${data.nsxt_transport_zone.overlay_tz.path}"
     replication_mode = "MTEP"
     tag {
