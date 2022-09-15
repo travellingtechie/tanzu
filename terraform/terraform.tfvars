@@ -19,7 +19,7 @@ ipset = ["10.19.12.201", "10.29.12.219", "10.29.12.220"]
 nsx_tag_scope = "project"
 nsx_tag = "terraform-demo"
 
-vsphere{
+vsphere = {
     vsphere_user = "administrator@vsphere.local"
     vsphere_password = "VMware1!"
     vsphere_ip = "10.29.15.169"
